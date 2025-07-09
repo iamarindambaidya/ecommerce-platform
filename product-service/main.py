@@ -6,7 +6,7 @@ import os
 
 app = FastAPI()
 
-# Connect to MongoDB
+# MongoDB connection
 mongo_uri = os.getenv("DB_URI", "mongodb://localhost:27017/")
 client = pymongo.MongoClient(mongo_uri)
 db = client["product_db"]
