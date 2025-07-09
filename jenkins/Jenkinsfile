@@ -1,0 +1,35 @@
+pipeline {
+       agent any
+       stages {
+           stage('Checkout') {
+               steps {
+                   git url: 'https://github.com/iamarindambaidya/ecommerce-platform.git', branch: 'main'
+               }
+           }
+           stage('Build Docker Images') {
+               steps {
+                   sh 'eval $(minikube docker-env)'
+                   dir('product-service') {
+                       sh 'docker build -t localhost:5000/product-service:latest .'
+                       sh 'docker push localhost:5000/product-service:latest'
+                   }
+                   dir('user-service') {
+                       sh 'docker build -t localhost:5000/user-service:latest .'
+                       sh 'docker push localhost:5000/user-service:latest'
+                   }
+                   dir('order-service') {
+                       sh 'docker build -t localhost:5000/order-service:latest .'
+                       sh 'docker push localhost:5000/order-service:latest'
+                   }
+               }
+           }
+           stage('Deploy to Kubernetes') {
+               steps {
+                   sh 'kubectl apply -f k8s-manifests/mongodb.yaml'
+                   sh 'kubectl apply -f k8s-manifests/product-service.yaml'
+                   sh 'kubectl apply -f k8s-manifests/user-service.yaml'
+                   sh 'kubectl apply -f k8s-manifests/order-service.yaml'
+               }
+           }
+       }
+   }
