@@ -1,0 +1,9 @@
+node_modules/
+__pycache__/
+*.pyc
+*.log
+terraform/.terraform/
+terraform/*.tfstate*
+*.zip
+jenkins_home/
+venv/
