@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-service
+  namespace: ecommerce
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: order-service
+  template:
+    metadata:
+      labels:
+        app: order-service
+    spec:
+      containers:
+      - name: order-service
+        image: localhost:5000/order-service:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: DB_URI
+          value: "mongodb://mongodb:27017/"
+        - name: PRODUCT_SERVICE_URL
+          value: "http://product-service/products"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: order-service
+  namespace: ecommerce
+spec:
+  selector:
+    app: order-service
+  ports:
+  - port: 80
+    targetPort: 8000
